@@ -3,7 +3,6 @@ class TicketAllocationService
     @ticket_option = ticket_option
     @quantity = quantity.to_i
     @user_id = user_id
-    @error_message = nil
   end
 
   def run
@@ -16,18 +15,13 @@ class TicketAllocationService
 
       ticket_option.update!(allocation: current_quantity - quantity)
       purchase = Purchase.create!(quantity:, user_id:, ticket_option:)
-      (1..quantity).each do
-        Ticket.create(purchase_id: purchase.id, ticket_option: ticket_option)
-      end
+      (1..quantity).each { Ticket.create(purchase_id: purchase.id, ticket_option: ticket_option) }
     end
 
-    true
+    [ true, nil ]
   rescue NotEnoughTicketsAvailableError, InvalidQuantityError => e
-    @error_message = e.message
-    error_message.nil?
+    [ false, e.message ]
   end
-
-  attr_accessor :error_message
 
   private
   attr_reader :ticket_option, :quantity, :user_id

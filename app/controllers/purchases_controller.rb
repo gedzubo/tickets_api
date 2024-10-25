@@ -9,10 +9,12 @@ class PurchasesController < ApplicationController
       quantity: ticket_allocation_params[:quantity]
     )
 
-    if service.run
+    success, error = service.run
+
+    if success
       render json: {}, status: :ok
     else
-      render json: { message: service.error_message }, status: :bad_request
+      render json: { message: error }, status: :bad_request
     end
   end
 

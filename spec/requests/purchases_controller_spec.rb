@@ -6,12 +6,13 @@ describe TicketOptionsController, type: :request do
   end
 
   describe "POST /ticket_options/:id/purchases" do
+    let(:user) { create(:user) }
     let(:ticket_option) { create(:ticket_option, allocation: 3) }
 
     context "when we have enough tickets to complete the purchase" do
       let(:params) do
         {
-          user_id: "38f13ced-8148-4d95-b5f6-28bf66f1eadb",
+          user_id: user.id,
           quantity: 3
         }
       end
@@ -26,7 +27,7 @@ describe TicketOptionsController, type: :request do
     context "when we do not have enough tickets to complete the purchase" do
       let(:params) do
         {
-          user_id: "38f13ced-8148-4d95-b5f6-28bf66f1eadb",
+          user_id: user.id,
           quantity: 4
         }
       end
@@ -47,7 +48,7 @@ describe TicketOptionsController, type: :request do
     context "when invalid quantity parameter is provided" do
       let(:params) do
         {
-          user_id: "38f13ced-8148-4d95-b5f6-28bf66f1eadb",
+          user_id: user.id,
           quantity: 0
         }
       end

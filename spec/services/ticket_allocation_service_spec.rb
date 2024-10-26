@@ -7,7 +7,8 @@ RSpec.describe TicketAllocationService do
     let(:ticket_option) { create(:ticket_option, allocation: allocation) }
     let(:allocation) { 3 }
     let(:quantity) { 2 }
-    let(:user_id) { Faker::Internet.uuid }
+    let(:user) { create(:user) }
+    let(:user_id) { user.id }
 
     context "with valid params" do
       it "returns correct response" do
@@ -53,6 +54,22 @@ RSpec.describe TicketAllocationService do
       let(:quantity) { -1 }
 
       let(:error_message) { "Please provide quantity which is a number and greater than zero" }
+
+      it "does not allocate the tickets" do
+        expect {
+          subject.run
+        }.to_not change(ticket_option, :allocation)
+      end
+
+      it "returns correct response" do
+        expect(subject.run).to eq([ false, error_message ])
+      end
+    end
+
+    context "when user does not exist" do
+      let(:user_id) { Faker::Internet.uuid }
+
+      let(:error_message) { "We couldn't find the user with provided ID" }
 
       it "does not allocate the tickets" do
         expect {

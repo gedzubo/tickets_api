@@ -2,7 +2,7 @@ class TicketAllocationService
   def initialize(ticket_option:, quantity:, user_id:)
     @ticket_option = ticket_option
     @quantity = quantity.to_i
-    @user_id = user_id
+    @user = User.find_by(id: user_id)
   end
 
   def run
@@ -14,20 +14,20 @@ class TicketAllocationService
       raise NotEnoughTicketsAvailableError if current_quantity < quantity
 
       ticket_option.update!(allocation: current_quantity - quantity)
-      purchase = Purchase.create!(quantity:, user_id:, ticket_option:)
+      purchase = Purchase.create!(quantity:, user:, ticket_option:)
       (1..quantity).each { Ticket.create(purchase_id: purchase.id, ticket_option: ticket_option) }
     end
 
     [ true, nil ]
-  rescue NotEnoughTicketsAvailableError, InvalidQuantityError => e
+  rescue NotEnoughTicketsAvailableError, InvalidQuantityError, UserNotFoundError => e
     [ false, e.message ]
   end
 
   private
-  attr_reader :ticket_option, :quantity, :user_id
+  attr_reader :ticket_option, :quantity, :user
 
   def validate_inputs
-    # in here I would check if the user ID is valid and if quantity is actually a valid number and not a zero
+    raise UserNotFoundError if user.nil?
     raise InvalidQuantityError if quantity.zero? || quantity < 0
   end
 end

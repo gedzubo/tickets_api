@@ -65,4 +65,23 @@ describe TicketOptionsController, type: :request do
       expect(json_response["allocation"]).to eq(ticket_option.allocation)
     end
   end
+
+  describe "GET /ticket_options" do
+    let!(:ticket_option) { create(:ticket_option) }
+
+    it "responds with created status" do
+      get ticket_options_path
+
+      expect(response).to have_http_status :ok
+    end
+
+    it "returns correct response body" do
+      get ticket_options_path
+
+      expect(json_response[0]["id"]).to eq(ticket_option.id)
+      expect(json_response[0]["name"]).to eq(ticket_option.name)
+      expect(json_response[0]["desc"]).to eq(ticket_option.desc)
+      expect(json_response[0]["allocation"]).to eq(ticket_option.allocation)
+    end
+  end
 end

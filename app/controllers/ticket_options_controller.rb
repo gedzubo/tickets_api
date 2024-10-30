@@ -17,7 +17,18 @@ class TicketOptionsController < ApplicationController
     end
   end
 
+  # GET /ticket_options
+  def index
+    render json: tickets
+  end
+
   private
+
+  def tickets
+    TicketOption.order(:name).page(params[:page]).map do |option|
+      TicketOptionPresenter.new(option)
+    end
+  end
 
   def set_ticket_option
     @ticket_option = TicketOption.find(params[:id])
